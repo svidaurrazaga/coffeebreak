@@ -1,0 +1,29 @@
+body {
+    padding-top:15px !important;
+}
+
+.interface {
+    width:90%;
+    margin-top: 75px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.vcenter {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    float: none !important;
+}
+
+.import-button {
+    margin-top:15px !important;
+}
+
+.drop-shadow {
+    box-shadow: 10px 10px 5px #888888 !important;
+}
+
+#photoPreview img {
+    max-width:100%;
+    max-height:100%;
+}

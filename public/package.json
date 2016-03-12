@@ -1,0 +1,14 @@
+{
+  "name": "helloworld",
+  "main": "index.html",
+  "version": "0.1.0",
+  "window": {
+    "toolbar": true
+  },
+  "scripts": {
+    "start": "nw ."
+  },
+  "dependencies": {
+    "mime": "^1.3.4"
+  }
+}
