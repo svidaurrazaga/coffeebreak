@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 				version: '0.12.3',
                 buildDir: './builds/',
                 zip: true,
-				platforms:['win', 'osx', 'linux'] // 'linux', 'win', 'osx'
+				platforms:['win', 'osx'] // 'linux', 'win', 'osx'
 			},
 			src: ['./public/**/**/*']
 		}
