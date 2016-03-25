@@ -55,25 +55,6 @@ window.onload = function() {
     console.log("Userprofile or Home")
     console.log(home);
 
-    // var globalRoot = __dirname; //(you may have to do some substring processing if the first script you run is not in the project root, since __dirname refers to the directory that the file is in for which __dirname is called in.)
-
-    // //compare the last directory in the globalRoot path to the name of the project in your package.json file
-    // var folders = globalRoot.split(path.sep);
-    // var packageName = folders[folders.length-1];
-    // var pwd = process.env.PWD;
-    // var npmPackageName = process.env.npm_package_name;
-
-    // console.log(folders);
-    // console.log(packageName);
-    // console.log(pwd);
-    // console.log(npmPackageName);
-    // if(packageName !== npmPackageName){
-    //     console.log('Failed check for runtime string equality between globalRoot-bottommost directory and npm_package_name.');
-    // }
-    // if(globalRoot !== pwd){
-    //     console.log('Failed check for runtime string equality between globalRoot and process.env.PWD.');
-    // }
-
     // http://stackoverflow.com/questions/10265798/determine-project-root-from-a-running-node-js-application    
     // https://github.com/inxilpro/node-app-root-path    
     var appRoot = require('app-root-path').path;
