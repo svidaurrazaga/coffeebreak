@@ -35,36 +35,25 @@ function findImageFiles (files, folderPath, cb) {
 
 // Runs when the browser has loaded the page
 window.onload = function() {
-    
-    var path = require('path');
-    var nwDir = path.dirname(process.execPath);
-    console.log("This is process.execPath");
-    console.log(nwDir);
-
-    // if windows environment then they get backslashes else forward slashes
+     // if windows environment then they get backslashes else forward slashes
     var seperator = (process.platform == "win32") ? "\\" : "/";
-    var split = nwDir.split(path.sep);
-    console.log("This is an array.")
-    console.log(split);
 
-    console.log("This is the home path");    
-    var homedir = (process.platform === 'win32') ? process.env.HOMEPATH : process.env.HOME;
-    console.log(homedir);
+    // Works on windows - keep for later    
+    // var path = require('path');
+    // var nwDir = path.dirname(process.execPath);
+    // console.log("This is process.execPath");
+    // console.log(nwDir);
 
-    var home = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
-    console.log("Userprofile or Home")
-    console.log(home);
-
+    // Get the root of this applications folder    
     // http://stackoverflow.com/questions/10265798/determine-project-root-from-a-running-node-js-application    
     // https://github.com/inxilpro/node-app-root-path    
     var appRoot = require('app-root-path').path;
     console.log(appRoot.path);
     var splitDirPath = appRoot.split(path.sep);
 
+    // Get the full path of the image folder outside of this application
+    // this is where users will upload their images too.
     var imageFolder = path.resolve(appRoot, "../../images");
-    console.log(imageFolder);
-
-    imageFolder = path.resolve(nwDir, "../images");
     console.log(imageFolder);
 
     //var folderPath = "./images";    
