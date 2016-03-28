@@ -1,16 +1,29 @@
 //https://scotch.io/tutorials/creating-a-photo-discovery-app-with-nw-js-part-1
 'use strict';
 
-// Dependencies - loading nw.js file system module
+// Dependencies
 var fs = require('fs');
 var mime = require('mime');
 var path = require('path');
 
+var seperator = (process.platform == "win32") ? "\\" : "/";
+var imageFolderPath = "";
 var imageMimeTypes = [
     'image/gif',
     'image/jpeg',
     'image/png'
 ];
+
+function previewImage(imageSource) {
+    $("#photoPreview").html(imageSource ? "<img id='img' src='" + imageSource + "'>" : "");
+}
+
+function createImageFolder() {
+    if (!fs.existsSync(imageFolderPath)) {
+        // create folder
+        fs.mkdirSync(imageFolderPath);
+    }
+}
 
 function findAllFiles (folderPath, cb) {
     fs.readdir(folderPath, function (err, files) {
@@ -33,11 +46,9 @@ function findImageFiles (files, folderPath, cb) {
     });
 }
 
-// Runs when the browser has loaded the page
-window.onload = function() {
-     // if windows environment then they get backslashes else forward slashes
-    var seperator = (process.platform == "win32") ? "\\" : "/";
-
+function bindUserImages() {
+// if windows environment then they get backslashes else forward slashes
+    
     // Works on windows - keep for later    
     // var path = require('path');
     // var nwDir = path.dirname(process.execPath);
@@ -48,19 +59,18 @@ window.onload = function() {
     // http://stackoverflow.com/questions/10265798/determine-project-root-from-a-running-node-js-application    
     // https://github.com/inxilpro/node-app-root-path    
     var appRoot = require('app-root-path').path;
-    console.log(appRoot.path);
     var splitDirPath = appRoot.split(path.sep);
 
     // Get the full path of the image folder outside of this application
     // this is where users will upload their images too.
-    var imageFolder = path.resolve(appRoot, "../../images");
-    console.log(imageFolder);
+    imageFolderPath = path.resolve(appRoot, "../../images");
 
-    //var folderPath = "./images";    
-    findAllFiles(imageFolder, function (err, files) {
+    createImageFolder();
+
+    findAllFiles(imageFolderPath, function (err, files) {
         if (!err) {
-            findImageFiles(files, imageFolder, function (imageFiles) {
-                //console.log(imageFiles);
+            $('#lstLocalPhotos').empty();
+            findImageFiles(files, imageFolderPath, function (imageFiles) {
                 $.each(imageFiles, function(i, image) {
                     $('#lstLocalPhotos').append($('<option/>', { 
                         value: image.path,
@@ -70,19 +80,56 @@ window.onload = function() {
             });
         }
     });
+}
+
+function openFolderDialog () {
+    var inputField = document.querySelector('#folderSelector');
+    inputField.addEventListener('change', function () {
+        var imageLocation = this.value;
+        previewImage(imageLocation);
+    }, false);
+    inputField.click();
+}
+
+function bindSelectFolderClick () {
+    var button = document.querySelector('#btnSelectImage');
+    button.addEventListener('click', function() {
+        openFolderDialog();
+    });
+}
+
+// Runs when the browser has loaded the page
+window.onload = function() {
+    bindUserImages();
+    bindSelectFolderClick();
 };
 
 $(document).ready(function() {
     $("#lstLocalPhotos").change(function() {
         var src = $(this).val();
-        $("#photoPreview").html(src ? "<img id='img' src='" + src + "'>" : "");
+        previewImage(src);
     });
-    $("#img").rotate({
-        bind: {
-            click: function(){
-                //$(this).rotate({ angle: 0, animateTo:45 })
-                alert($(this).getRotateAngle());
-            }
-        }
+
+    $("#btnImportImage").click(function() {
+        var image = document.getElementById("img");
+        var imagePath = image.getAttribute("src");
+        var parseFormat = path.parse(imagePath);
+
+        var newImagePath = imageFolderPath + seperator + parseFormat.base;
+
+        var source = fs.createReadStream(imagePath);
+        var dest = fs.createWriteStream(newImagePath);
+
+        source.pipe(dest);
+        source.on('end', function() { alert("File Saved."); });
+        source.on('error', function(err) { console.log(err); });
+
+        bindUserImages();        
     });
+
+    // save for adding text to photo    
+    // $("#btnPublish").click(function() {
+    //     // Get the HTML contents of the currently active editor
+    //     var active = tinyMCE.activeEditor.getContent();     
+    // });    
 });
