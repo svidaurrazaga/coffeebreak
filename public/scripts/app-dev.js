@@ -23,15 +23,21 @@ function findTextFile() {
 
     var parseFormat = path.parse(imagePath);
     var imageName = parseFormat.base;
+    var textPath = parseFormat.dir + seperator + parseFormat.name + ".txt";
 
-    if (fs.existsSync(imagePath)) {
+    if (fs.existsSync(imagePath) & !fs.existsSync(textPath)) {
         tinymce.get("imageDescription").setContent('');
+        fs.writeFile(textPath, "Hey there!", function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            console.log("The file was saved!");
+        }); 
     }   
 }
 
 function createImageFolder() {
     if (!fs.existsSync(imageFolderPath)) {
-        // create folder
         fs.mkdirSync(imageFolderPath);
     }
 }
