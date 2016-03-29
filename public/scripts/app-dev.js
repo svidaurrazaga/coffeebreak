@@ -1,4 +1,3 @@
-//https://scotch.io/tutorials/creating-a-photo-discovery-app-with-nw-js-part-1
 'use strict';
 
 // Dependencies
@@ -16,6 +15,18 @@ var imageMimeTypes = [
 
 function previewImage(imageSource) {
     $("#photoPreview").html(imageSource ? "<img id='img' src='" + imageSource + "'>" : "");
+}
+
+function findTextFile() {
+    var image = document.getElementById("img");
+    var imagePath = image.getAttribute("src");
+
+    var parseFormat = path.parse(imagePath);
+    var imageName = parseFormat.base;
+
+    if (fs.existsSync(imagePath)) {
+        tinymce.get("imageDescription").setContent('');
+    }   
 }
 
 function createImageFolder() {
@@ -108,6 +119,7 @@ $(document).ready(function() {
     $("#lstLocalPhotos").change(function() {
         var src = $(this).val();
         previewImage(src);
+        findTextFile(src);
     });
 
     $("#btnImportImage").click(function() {
