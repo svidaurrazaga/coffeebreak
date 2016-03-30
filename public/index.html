@@ -11,17 +11,21 @@
 <body>
     <div class="interface">
         <div class="container">
-            <div class="panel panel-primary">
+            <div class="panel panel-success">
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
-                            <button id="btnSelectImage" type="button" class="btn btn-block btn-primary">Import Photo</button>
+                        <div class="content-block pull-left">
+                            <div class="title"><h2>Koffee Break Application</h2></div>
+                        </div>
+                        <div class="content-block pull-right">
+                            "SOMETIMES TAKSE 4 to 5 TRIES TO GRAB PHOTO"
                             <input id="folderSelector" type="file" accept=".jpg,.jpeg,.gif" />
+                            <button id="btnSelectImage" type="button" class="btn btn-info">Browse Photos</button>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                            <div class="panel panel-success drop-shadow">
+                        <div class="col-lg-12">
+                            <div class="panel panel-success">
                                 <div class="panel-heading">
                                     <div class="panel-title">Photos on Device</div>
                                 </div>
@@ -30,19 +34,31 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div id="photoContent" style="display:none;" class="row">
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                             <div class="row">
-                                <div id="photoPreview"></div>
-                            </div>  
+                                <div id="photoPreview" class="content-block"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                             <div class="row">
-                                <form method="post">
-                                    <textarea id="imageDescription">Hello, World!</textarea>
-                                </form>
+                                <div class="photo-detail-content bg-warning content-block"></div>
                             </div>
                             <div class="row">
-                                <button id="btnImportImage" type="button" class="btn btn-primary">Add</button>
-                                <button id="btnCancelImport" type="button" class="btn btn-default">Cancel</button>
+                                <div class="content-block">
+                                    <form method="post">
+                                        <textarea id="imageDescription">Hello, World!</textarea>
+                                    </form>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                    <div id="divSaveButtons" style="display:none;" class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pull-right">
+                            CONTINUE WORKING ON IMPORTING IMAGE FLOW
+                            <button id="btnImportImage" type="button" class="btn btn-info">Save</button>
+                            <button id="btnCancelImport" type="button" class="btn btn-default">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -57,8 +73,8 @@
         //https://www.tinymce.com/docs/
         tinymce.init({
             selector: '#imageDescription',
-            height: 150,
-            width: 300,
+            height: 200,
+            width: 400,
             menubar: false,
             toolbar: 'undo redo | bold italic'
         });

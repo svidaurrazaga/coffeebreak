@@ -13,9 +13,16 @@ var imageMimeTypes = [
     'image/png'
 ];
 
-function previewImage(imageSource) {
-    $("#photoPreview").html(imageSource ? "<img id='img' src='" + imageSource + "'>" : "");
+
+
+function fileExists(imageFilePath) {
+    if (fs.existsSync(imageFilePath)) {
+        return true;
+    }
+    return false;
 }
+
+//var content = tinyMCE.activeEditor.getContent();
 
 function findTextFile() {
     var image = document.getElementById("img");
@@ -25,27 +32,55 @@ function findTextFile() {
     var imageName = parseFormat.base;
     var textPath = parseFormat.dir + seperator + parseFormat.name + ".txt";
 
-    if (fs.existsSync(imagePath) & !fs.existsSync(textPath)) {
+    if (fileExists(imagePath) & !fileExists(textPath)) {
         tinymce.get("imageDescription").setContent('');
-        fs.writeFile(textPath, "Hey there!", function(err) {
+        fs.writeFile(textPath, "", function(err) {
             if(err) {
                 return console.log(err);
             }
-            console.log("The file was saved!");
+            alert('The file was saved.');
         }); 
-    }   
+    }
+}
+
+function displayPhotoDataArea(showDivContent) {
+    if (showDivContent) {
+        document.getElementById('divSaveButtons').style.display = "block";
+        document.getElementById('photoContent').style.display = "block";
+    }
+    else {
+        $("#photoPreview").html('');
+        tinymce.get("imageDescription").setContent('');
+        document.getElementById('divSaveButtons').style.display = "none";
+        document.getElementById('photoContent').style.display = "none";
+    }
+}
+
+function previewImage(imageSource) {
+    if (imageSource == "") displayPhotoDataArea(false);
+    $("#photoPreview").html(imageSource ? "<img id='img' src='" + imageSource + "' class='drop-shadow'>" : "");
 }
 
 function createImageFolder() {
-    if (!fs.existsSync(imageFolderPath)) {
+    if (!fileExists(imageFolderPath)) {
         fs.mkdirSync(imageFolderPath);
     }
 }
 
-function findAllFiles (folderPath, cb) {
-    fs.readdir(folderPath, function (err, files) {
-        if (err) { return cb(err, null); }
-        cb(null, files);
+function openFolderDialog() {
+    displayPhotoDataArea(true);
+    var inputField = document.querySelector('#folderSelector');
+    inputField.addEventListener('change', function() {
+        var imageLocation = this.value;
+        previewImage(imageLocation);
+    });
+    inputField.click();
+}
+
+function bindSelectFolderClick () {
+    var button = document.querySelector('#btnSelectImage');
+    button.addEventListener('click', function() {
+        openFolderDialog();
     });
 }
 
@@ -63,9 +98,16 @@ function findImageFiles (files, folderPath, cb) {
     });
 }
 
+function findAllFiles (folderPath, cb) {
+    fs.readdir(folderPath, function (err, files) {
+        if (err) { return cb(err, null); }
+        cb(null, files);
+    });
+}
+
 function bindUserImages() {
-// if windows environment then they get backslashes else forward slashes
-    
+    // if windows environment then they get backslashes else forward slashes
+
     // Works on windows - keep for later    
     // var path = require('path');
     // var nwDir = path.dirname(process.execPath);
@@ -99,26 +141,13 @@ function bindUserImages() {
     });
 }
 
-function openFolderDialog () {
-    var inputField = document.querySelector('#folderSelector');
-    inputField.addEventListener('change', function () {
-        var imageLocation = this.value;
-        previewImage(imageLocation);
-    }, false);
-    inputField.click();
-}
-
-function bindSelectFolderClick () {
-    var button = document.querySelector('#btnSelectImage');
-    button.addEventListener('click', function() {
-        openFolderDialog();
-    });
-}
-
 // Runs when the browser has loaded the page
 window.onload = function() {
-    bindUserImages();
     bindSelectFolderClick();
+    
+    bindUserImages();
+    
+    displayPhotoDataArea(false);
 };
 
 $(document).ready(function() {
@@ -126,28 +155,43 @@ $(document).ready(function() {
         var src = $(this).val();
         previewImage(src);
         findTextFile(src);
+        displayPhotoDataArea(true);
     });
 
     $("#btnImportImage").click(function() {
+        displayPhotoDataArea(true);
+        
         var image = document.getElementById("img");
         var imagePath = image.getAttribute("src");
         var parseFormat = path.parse(imagePath);
 
         var newImagePath = imageFolderPath + seperator + parseFormat.base;
 
+        // Check if the photo already exists in my image folder 
+        // if not then create & save text to file
+        // Possibly allow user to rename image
         var source = fs.createReadStream(imagePath);
         var dest = fs.createWriteStream(newImagePath);
 
         source.pipe(dest);
         source.on('end', function() { alert("File Saved."); });
-        source.on('error', function(err) { console.log(err); });
+        source.on('error', function(err) { console.log(err); });       
 
         bindUserImages();        
     });
 
+    $("#btnCancelImport").click(function() {
+        displayPhotoDataArea(false);
+    });    
+
     // save for adding text to photo    
-    // $("#btnPublish").click(function() {
-    //     // Get the HTML contents of the currently active editor
-    //     var active = tinyMCE.activeEditor.getContent();     
-    // });    
+    $("#btnPublish").click(function() {
+        alert("Publish Button clicked");    
+    });    
 });
+
+
+// Keep this just in case I use this module to upload my images
+// https://github.com/expressjs/multer
+// https://codeforgeek.com/2014/11/file-uploads-using-node-js/
+//

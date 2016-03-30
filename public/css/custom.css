@@ -1,10 +1,8 @@
-body {
-    padding-top:15px !important;
+body { 
+    background-color: #efefef;
 }
 
-.interface {
-    width:90%;
-    margin-top: 75px;
+.wireframe {
     margin-left:auto;
     margin-right:auto;
 }
@@ -31,3 +29,27 @@ body {
 #folderSelector {
     display: none;
 }
+
+.photo-detail-content {
+    padding: 10px 10px;
+}
+
+.content-block {
+    margin:15px 15px;
+}
+
+.title h2 {
+    margin:0;
+}
+
+/* centered columns styles */
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:center;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+
+.row-centered { text-align:center; }
