@@ -65,7 +65,6 @@ function displayPhotoDataArea(showDivContent) {
         document.getElementById('photoContent').style.display = "block";
     }
     else {
-        //document.getElementById('lstLocalPhotos').selectedIndex = -1;
         $("#photoPreview").html('');
         tinymce.get("imageDescription").setContent('');
         document.getElementById('divSaveButtons').style.display = "none";
@@ -130,15 +129,12 @@ function findAllFiles (folderPath, cb) {
 }
 
 function bindUserImages() {
-    // Works on windows - keep for later    
-    //var path = require('path'); //win
-    //var nwDir = path.dirname(process.execPath); //win
-
     // Get the root of this applications folder    
     // http://stackoverflow.com/questions/10265798/determine-project-root-from-a-running-node-js-application    
-    // https://github.com/inxilpro/node-app-root-path    
-    var nwDir = require('app-root-path').path; // local
-    
+    // https://github.com/inxilpro/node-app-root-path
+    var nwDir = (process.platform == "win32")
+        ? require('path').dirname(process.execPath) //win
+        : require('app-root-path').path; // local
 
     // Get the full path of the image folder outside of this application
     // this is where users will upload their images too.
