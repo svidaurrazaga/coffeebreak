@@ -1,3 +1,8 @@
+// Keep this just in case I use this module to upload my images
+// https://github.com/expressjs/multer
+// https://codeforgeek.com/2014/11/file-uploads-using-node-js/
+
+
 'use strict';
 
 // Dependencies
@@ -13,7 +18,11 @@ var imageMimeTypes = [
     'image/png'
 ];
 
-
+function displayNotification(alertName, message) {
+    var div = document.getElementById('notification');
+    div.className = alertName;
+    div.innerHTML = message;
+}
 
 function fileExists(imageFilePath) {
     if (fs.existsSync(imageFilePath)) {
@@ -22,24 +31,31 @@ function fileExists(imageFilePath) {
     return false;
 }
 
-//var content = tinyMCE.activeEditor.getContent();
+function saveTextFile(imageFileSrc) {
+    var parseFormat = path.parse(imageFileSrc);
+    var imageName = parseFormat.base;
+    var textPath = parseFormat.dir + seperator + parseFormat.name + ".txt";
 
-function findTextFile() {
-    var image = document.getElementById("img");
-    var imagePath = image.getAttribute("src");
+    var status = 'Success';
+    var getCurrentContent = tinyMCE.activeEditor.getContent()
+    fs.writeFile(textPath, getCurrentContent, function(err) {
+        if (err) {
+            status = 'Error: ' + err;
+        }
+    });
+    return status;
+}
 
+function getTextFile(imagePath) {
     var parseFormat = path.parse(imagePath);
     var imageName = parseFormat.base;
     var textPath = parseFormat.dir + seperator + parseFormat.name + ".txt";
 
-    if (fileExists(imagePath) & !fileExists(textPath)) {
-        tinymce.get("imageDescription").setContent('');
-        fs.writeFile(textPath, "", function(err) {
-            if(err) {
-                return console.log(err);
-            }
-            alert('The file was saved.');
-        }); 
+    if (fileExists(textPath)) {
+        fs.readFile(textPath, 'utf8', function(err, data) {
+            if (err) displayNotification('alert alert-danger', err);
+            var getCurrentContent = tinymce.get("imageDescription").setContent(data);
+        });
     }
 }
 
@@ -49,6 +65,7 @@ function displayPhotoDataArea(showDivContent) {
         document.getElementById('photoContent').style.display = "block";
     }
     else {
+        //document.getElementById('lstLocalPhotos').selectedIndex = -1;
         $("#photoPreview").html('');
         tinymce.get("imageDescription").setContent('');
         document.getElementById('divSaveButtons').style.display = "none";
@@ -57,8 +74,12 @@ function displayPhotoDataArea(showDivContent) {
 }
 
 function previewImage(imageSource) {
-    if (imageSource == "") displayPhotoDataArea(false);
-    $("#photoPreview").html(imageSource ? "<img id='img' src='" + imageSource + "' class='drop-shadow'>" : "");
+    if (imageSource == "") {
+        displayPhotoDataArea(false);
+        return;
+    }
+    
+    $("#photoPreview").html(imageSource ? "<img id='img' src='" + imageSource + "' class='img-responsive img-rounded center-block'>" : ""); //class='drop-shadow'
 }
 
 function createImageFolder() {
@@ -68,11 +89,13 @@ function createImageFolder() {
 }
 
 function openFolderDialog() {
-    displayPhotoDataArea(true);
     var inputField = document.querySelector('#folderSelector');
     inputField.addEventListener('change', function() {
         var imageLocation = this.value;
         previewImage(imageLocation);
+        document.getElementById('btnAdd').style.display = 'inline';
+        document.getElementById('btnUpdate').style.display = 'none';
+        displayPhotoDataArea(true);
     });
     inputField.click();
 }
@@ -80,6 +103,7 @@ function openFolderDialog() {
 function bindSelectFolderClick () {
     var button = document.querySelector('#btnSelectImage');
     button.addEventListener('click', function() {
+        displayNotification('', '');
         openFolderDialog();
     });
 }
@@ -106,23 +130,20 @@ function findAllFiles (folderPath, cb) {
 }
 
 function bindUserImages() {
-    // if windows environment then they get backslashes else forward slashes
-
     // Works on windows - keep for later    
-    // var path = require('path');
-    // var nwDir = path.dirname(process.execPath);
-    // console.log("This is process.execPath");
-    // console.log(nwDir);
+    //var path = require('path'); //win
+    //var nwDir = path.dirname(process.execPath); //win
 
     // Get the root of this applications folder    
     // http://stackoverflow.com/questions/10265798/determine-project-root-from-a-running-node-js-application    
     // https://github.com/inxilpro/node-app-root-path    
-    var appRoot = require('app-root-path').path;
-    var splitDirPath = appRoot.split(path.sep);
+    var nwDir = require('app-root-path').path; // local
+    
 
     // Get the full path of the image folder outside of this application
     // this is where users will upload their images too.
-    imageFolderPath = path.resolve(appRoot, "../../images");
+    var splitDirPath = nwDir.split(path.sep);
+    imageFolderPath = path.resolve(nwDir, ".." + seperator + "images");
 
     createImageFolder();
 
@@ -144,54 +165,97 @@ function bindUserImages() {
 // Runs when the browser has loaded the page
 window.onload = function() {
     bindSelectFolderClick();
-    
     bindUserImages();
-    
     displayPhotoDataArea(false);
 };
 
 $(document).ready(function() {
     $("#lstLocalPhotos").change(function() {
         var src = $(this).val();
+        displayNotification('', '');
         previewImage(src);
-        findTextFile(src);
+        getTextFile(src);
+        document.getElementById('btnAdd').style.display = 'none';
+        document.getElementById('btnUpdate').style.display = 'inline';
         displayPhotoDataArea(true);
     });
 
-    $("#btnImportImage").click(function() {
-        displayPhotoDataArea(true);
-        
+    $("#btnUpdate").click(function() {
         var image = document.getElementById("img");
-        var imagePath = image.getAttribute("src");
-        var parseFormat = path.parse(imagePath);
+        var originalFileSrc = image.getAttribute("src");
 
-        var newImagePath = imageFolderPath + seperator + parseFormat.base;
+        var msg = saveTextFile(originalFileSrc);
+        if (msg == "Success") {
+            displayPhotoDataArea(false);
+            bindUserImages();
+            displayNotification('alert alert-success', 'Saved successfully!');
+        } else {
+            displayNotification('alert alert-danger', msg);
+        }
+    });
+
+    $("#btnAdd").click(function() {
+        /* Test script 
+        var parseFormat = path.parse('/hello/world/2016ImgName.jpg');
+        var checkForSortOrder = parseFormat.name.substring(0, 3);
+
+        var sortOrder = "";
+        for (var i = 0; i < checkForSortOrder.length; i++){
+            if (isNaN(checkForSortOrder.substring(i, i + 1))) {
+                sortOrder += checkForSortOrder.substring(i, i + 1);
+            }
+        }
+        return;
+        */
+
+        //displayPhotoDataArea(true);
+        var image = document.getElementById("img");
+        var originalFileSrc = image.getAttribute("src");
+
+        if (originalFileSrc.length == 0) {
+            displayNotification('alert alert-info', 'No image available. Please browse to a valid image.');
+            return;
+        }
+
+        var parseFormat = path.parse(originalFileSrc);
+        var newImageSrc = imageFolderPath + seperator + parseFormat.base;
 
         // Check if the photo already exists in my image folder 
         // if not then create & save text to file
         // Possibly allow user to rename image
-        var source = fs.createReadStream(imagePath);
-        var dest = fs.createWriteStream(newImagePath);
+        if (fileExists(newImageSrc)) {
+            displayNotification('alert alert-warning', 'The image you are trying to save already exists.');
+            return;
+        }
 
+        // Copy file to local application drive        
+        var source = fs.createReadStream(originalFileSrc);
+        var dest = fs.createWriteStream(newImageSrc);
         source.pipe(dest);
-        source.on('end', function() { alert("File Saved."); });
-        source.on('error', function(err) { console.log(err); });       
 
-        bindUserImages();        
+        var errorMessage = '';
+        source.on('end', function() { });
+        source.on('error', function(err) { errorMessage = err; });
+
+        var isSaved = fileExists(newImageSrc);
+        if (isSaved) {
+            var msg = saveTextFile(newImageSrc);
+            if (msg == "Success") {
+                displayPhotoDataArea(false);
+                bindUserImages();
+                displayNotification('alert alert-success', 'Image saved!');
+            } else {
+                // rollback and remove image
+                fs.unlinkSync(newImageSrc);
+                displayNotification('alert alert-danger', msg);
+            }
+        } else {
+            displayNotification('alert alert-danger', errorMessage);
+        }
     });
 
-    $("#btnCancelImport").click(function() {
+    $("#btnCancel").click(function() {
+        displayNotification('', '');
         displayPhotoDataArea(false);
-    });    
-
-    // save for adding text to photo    
-    $("#btnPublish").click(function() {
-        alert("Publish Button clicked");    
-    });    
+    });   
 });
-
-
-// Keep this just in case I use this module to upload my images
-// https://github.com/expressjs/multer
-// https://codeforgeek.com/2014/11/file-uploads-using-node-js/
-//

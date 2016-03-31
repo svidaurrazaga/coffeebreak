@@ -11,28 +11,35 @@
 <body>
     <div class="interface">
         <div class="container">
-            <div class="panel panel-success">
+            <div class="panel panel-info">
                 <div class="panel-body">
                     <div class="row">
                         <div class="content-block pull-left">
                             <div class="title"><h2>Koffee Break Application</h2></div>
                         </div>
                         <div class="content-block pull-right">
-                            "SOMETIMES TAKSE 4 to 5 TRIES TO GRAB PHOTO"
                             <input id="folderSelector" type="file" accept=".jpg,.jpeg,.gif" />
                             <button id="btnSelectImage" type="button" class="btn btn-info">Browse Photos</button>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="panel panel-success">
+                            <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <div class="panel-title">Photos on Device</div>
                                 </div>
                                 <div class="panel-body">
                                     <select id="lstLocalPhotos" size="10" class="form-control"></select>
+                                    <div id="notification" class="" role="alert"></div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div id="divSaveButtons" style="display:none;" class="row">
+                        <div class="content-block">
+                            <button id="btnAdd" type="button" class="btn btn-info">Save</button>
+                            <button id="btnUpdate" type="button" class="btn btn-info">Save</button>
+                            <button id="btnCancel" type="button" class="btn btn-default">Cancel</button>
                         </div>
                     </div>
                     <div id="photoContent" style="display:none;" class="row">
@@ -43,27 +50,17 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                             <div class="row">
-                                <div class="photo-detail-content bg-warning content-block"></div>
-                            </div>
-                            <div class="row">
                                 <div class="content-block">
                                     <form method="post">
-                                        <textarea id="imageDescription">Hello, World!</textarea>
+                                        <textarea id="imageDescription"></textarea>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div id="divSaveButtons" style="display:none;" class="row">
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pull-right">
-                            CONTINUE WORKING ON IMPORTING IMAGE FLOW
-                            <button id="btnImportImage" type="button" class="btn btn-info">Save</button>
-                            <button id="btnCancelImport" type="button" class="btn btn-default">Cancel</button>
-                        </div>
-                    </div>
                 </div>
             </div>
-            <button id="btnPublish" type="button" class="btn btn-block btn-primary">Publish</button>
+            <button id="btnPublish" type="button" class="btn btn-block btn-primary">Preview</button>
         </div>
     </div>
     
