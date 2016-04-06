@@ -18,6 +18,13 @@ var imageMimeTypes = [
     'image/png'
 ];
 
+function stripHTML(dirtyString) {
+    var container = document.createElement('div');
+    var text = document.createTextNode(dirtyString);
+    container.appendChild(text);
+    return container.innerHTML; // innerHTML will be a xss safe string
+}
+
 function displayNotification(alertName, message) {
     var div = document.getElementById('notification');
     div.className = alertName;
@@ -37,7 +44,9 @@ function saveTextFile(imageFileSrc) {
     var textPath = parseFormat.dir + seperator + parseFormat.name + ".txt";
 
     var status = 'Success';
-    var getCurrentContent = tinyMCE.activeEditor.getContent()
+
+    // Work on stripping HTML (replace <p> with \r\n) and vice versa
+    var getCurrentContent = stripHTML(tinyMCE.activeEditor.getContent());
     fs.writeFile(textPath, getCurrentContent, function(err) {
         if (err) {
             status = 'Error: ' + err;
