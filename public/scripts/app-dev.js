@@ -2,7 +2,6 @@
 // https://github.com/expressjs/multer
 // https://codeforgeek.com/2014/11/file-uploads-using-node-js/
 
-
 'use strict';
 
 // Dependencies
@@ -18,12 +17,10 @@ var imageMimeTypes = [
     'image/png'
 ];
 
-function stripHTML(dirtyString) {
-    var container = document.createElement('div');
-    var text = document.createTextNode(dirtyString);
-    container.appendChild(text);
-    return container.innerHTML; // innerHTML will be a xss safe string
-}
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
 
 function displayNotification(alertName, message) {
     var div = document.getElementById('notification');
@@ -42,12 +39,10 @@ function saveTextFile(imageFileSrc) {
     var parseFormat = path.parse(imageFileSrc);
     var imageName = parseFormat.base;
     var textPath = parseFormat.dir + seperator + parseFormat.name + ".txt";
-
     var status = 'Success';
-
-    // Work on stripping HTML (replace <p> with \r\n) and vice versa
-    var getCurrentContent = stripHTML(tinyMCE.activeEditor.getContent());
-    fs.writeFile(textPath, getCurrentContent, function(err) {
+    var getCurrentContent = tinyMCE.activeEditor.getContent().replaceAll("<p>", "");
+    var newContent = getCurrentContent.replaceAll("</p>", "\n").replaceAll("<br />", "\n");
+    fs.writeFile(textPath, newContent, function(err) {
         if (err) {
             status = 'Error: ' + err;
         }
@@ -56,6 +51,8 @@ function saveTextFile(imageFileSrc) {
 }
 
 function getTextFile(imagePath) {
+    tinyMCE.activeEditor.setContent('');
+
     var parseFormat = path.parse(imagePath);
     var imageName = parseFormat.base;
     var textPath = parseFormat.dir + seperator + parseFormat.name + ".txt";
@@ -63,7 +60,8 @@ function getTextFile(imagePath) {
     if (fileExists(textPath)) {
         fs.readFile(textPath, 'utf8', function(err, data) {
             if (err) displayNotification('alert alert-danger', err);
-            var getCurrentContent = tinymce.get("imageDescription").setContent(data);
+            var getCurrentContent = data.replaceAll("\n", "<br />");
+            tinyMCE.activeEditor.setContent(getCurrentContent);
         });
     }
 }
