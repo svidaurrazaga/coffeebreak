@@ -33,3 +33,7 @@ cache
 
 # Optional REPL history
 .node_repl_history
+
+# Ignore image directories
+images/
+public/images
