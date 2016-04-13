@@ -1,0 +1,97 @@
+.tDnD_whileDrag {
+    /*z-index: 500;*/
+    /*width: 90%;*/
+    /*margin: -10px;*/
+    /*display: table-cell;*/
+    /*color: transparent;*/
+    /*width: 0px*/
+}
+.tDnD_whileDrag td {
+    background-color: #eee;
+    /*-webkit-box-shadow: 11px 5px 12px 2px #333, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    -webkit-box-shadow: 6px 3px 5px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;
+    /*-moz-box-shadow: 6px 4px 5px 1px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    /*-box-shadow: 6px 4px 5px 1px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+}
+/*.tDnD_whileDrag td:first-child {*/
+    /*-webkit-box-shadow: 5px 4px 5px 1px #111, 0 1px 0 #ccc inset, 1px -1px 0 #ccc inset;*/
+    /*-moz-box-shadow: 6px 3px 5px 2px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, 1px 0 0 #ccc inset;*/
+    /*-box-shadow: 6px 3px 5px 2px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, 1px 0 0 #ccc inset;*/
+/*}*/
+.tDnD_whileDrag td:last-child {
+    /*-webkit-box-shadow: 8px 7px 12px 0 #333, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;*/
+    -webkit-box-shadow: 1px 8px 6px -4px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset;
+    /*-moz-box-shadow: 0 9px 4px -4px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, -1px 0 0 #ccc inset;*/
+    /*-box-shadow: 0 9px 4px -4px #555, 0 1px 0 #ccc inset, 0 -1px 0 #ccc inset, -1px 0 0 #ccc inset;*/
+}
+    /*-webkit-box-shadow:  0 0 40px white, 10px 10px 15px black;*/
+    /*-moz-box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;*/
+    /*-webkit-box-shadow: 0px 0px 40px 1px white, 0px 1px 1px 1px black;*/
+    /*box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.5) inset;*/
+/*}*/
+/*.tDnD_whileDrag {*/
+    /*background-color: black;*/
+    /*position: relative;*/
+    /*display: block;*/
+    /*-moz-box-shadow: 0px 0px 40px 1px white, 0px 1px 1px 1px black;*/
+    /*-webkit-box-shadow: 0px 0px 40px 1px white, 0px 1px 1px 1px black;*/
+    /*box-shadow:        0px 0px 40px 1px white, 0px 1px 1px 1px black ;*/
+    /*-webkit-box-shadow: 0 15px 10px -10px black, 0 1px 4px black, 0 0 10px darkgray inset;*/
+    /*-webkit-box-shadow: 0 15px 10px -10px black, 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;*/
+    /*-moz-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;*/
+    /*box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;*/
+    /*width: 90%;*/
+    /*height: 90%;*/
+    /*width: 100%;*/
+    /*overflow: visible;*/
+    /*z-index: 10000;*/
+    /*opacity: .4;*/
+    /*border-collapse: separate;*/
+    /*filter:Alpha(Opacity=50);*/
+    /*width: auto;*/
+
+/*}*/
+
+/*tr.alt td {*/
+    /*width:200px*/
+    /*-ms-transform:rotate(1deg;*/
+    /*-moz-transform: rotate(0deg);*/
+    /*-webkit-transform:rotate(0deg);*/
+    /*-o-transform:rotate(0deg);*/
+/*}*/
+
+
+tr.myDragClass td {
+    /*position: fixed;*/
+    color: yellow;
+    text-shadow: 0 0 10px black, 0 0 10px black, 0 0 8px black, 0 0 6px black, 0 0 6px black;
+    background-color: #999;
+    -webkit-box-shadow: 0 12px 14px -12px #111 inset, 0 -2px 2px -1px #333 inset;
+}
+tr.myDragClass td:first-child {
+    -webkit-box-shadow: 0 12px 14px -12px #111 inset, 12px 0 14px -12px #111 inset, 0 -2px 2px -1px #333 inset;
+}
+tr.myDragClass td:last-child {
+    -webkit-box-shadow: 0 12px 14px -12px #111 inset, -12px 0 14px -12px #111 inset, 0 -2px 2px -1px #333 inset;
+}
+
+tr.nodrop td {
+    border-bottom: 1px solid #00bb00;
+    color: #00bb00;
+}
+tr.nodrag td {
+    border-bottom: 1px solid #FF6600;
+    color: #FF6600;
+}
+
+
+td.dragHandle {
+
+}
+
+td.showDragHandle {
+	background-image: url(images/updown2.gif);
+	background-repeat: no-repeat;
+	background-position: center center;
+	cursor: move;
+}
