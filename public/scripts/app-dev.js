@@ -29,10 +29,12 @@ function displayNotification(alertName, message) {
 }
 
 function fileExists(imageFilePath) {
-    if (fs.existsSync(imageFilePath)) {
+    try {
+        fs.accessSync(imageFilePath, fs.F_OK);
         return true;
+    } catch (e) {
+        return false;
     }
-    return false;
 }
 
 function saveTextFile(imageFileSrc) {
@@ -42,12 +44,8 @@ function saveTextFile(imageFileSrc) {
     var status = 'Success';
     var getCurrentContent = tinyMCE.activeEditor.getContent().replaceAll("<p>", "");
     var newContent = getCurrentContent.replaceAll("</p>", "\n").replaceAll("<br />", "\n");
-    fs.writeFile(textPath, newContent, function(err) {
-        if (err) {
-            status = 'Error: ' + err;
-        }
-    });
-    return status;
+    var result = fs.writeFile(textPath, newContent);
+    return (typeof(result) == "undefined") ? status : result;
 }
 
 function getTextFile(imagePath) {
@@ -210,6 +208,18 @@ $(document).ready(function() {
         }
         return;
         */
+        // get last sort order
+        var sortOrder = "";
+        var photoOptions = $("#lstLocalPhotos > option");
+        if (photoOptions.length > 0) {
+            var option = photoOptions[photoOptions.length - 1];
+            var optionSortNumber = option.innerHTML.substring (0, 2);
+            var newIndex = Number(optionSortNumber) + 101;
+            var newIndexStr = '' + newIndex;
+            sortOrder = newIndexStr.substring(1, 3); // get the last two characters
+        } else {
+            sortOrder = "01";
+        }
 
         //displayPhotoDataArea(true);
         var image = document.getElementById("img");
@@ -244,9 +254,31 @@ $(document).ready(function() {
         if (isSaved) {
             var msg = saveTextFile(newImageSrc);
             if (msg == "Success") {
-                displayPhotoDataArea(false);
-                bindUserImages();
-                displayNotification('alert alert-success', 'Image saved!');
+                // rename file with sort order number
+                var newImageWithSortNumber = imageFolderPath + seperator + sortOrder + "_" + parseFormat.base;
+                fs.rename(newImageSrc, newImageWithSortNumber, function (err) {
+                    if (err)
+                    {
+                        displayNotification('alert alert-warning', 'Could not apply default sort number.');
+                        console.log(err);
+                        return;
+                    } else {
+                        var oldTextFile = imageFolderPath + seperator + parseFormat.name + '.txt';
+                        var newTextFileWithSortOrder = imageFolderPath + seperator + sortOrder + "_" + parseFormat.name + ".txt";
+                        fs.rename(oldTextFile, newTextFileWithSortOrder, function(err) {
+                            if (err) {
+                                displayNotification('alert alert-warning', 'Could not apply default sort number.');
+                                console.log(err);
+                                return;
+                            }
+                            else {
+                                //console.log('The file has been re-named to: ' + newImageWithSortNumber);
+                                displayNotification('alert alert-success', 'Image saved!');
+                            }
+                        });
+                    }
+                });
+                
             } else {
                 // rollback and remove image
                 fs.unlinkSync(newImageSrc);
@@ -255,6 +287,8 @@ $(document).ready(function() {
         } else {
             displayNotification('alert alert-danger', errorMessage);
         }
+        displayPhotoDataArea(false);
+        bindUserImages();
     });
 
     $("#btnCancel").click(function() {

@@ -45,6 +45,13 @@ function getTextFile(imagePath) {
     return fileContent;
 }
 
+function getImageFile(imagePath) {
+    var imageName = imagePath.substring(7, imagePath.length);
+    if (fileExists(imageName)) {
+        return imageName;
+    }
+}
+
 function findImageFiles (files, folderPath) {
     var imageFiles = [];
     files.forEach(function (file) {
@@ -58,7 +65,11 @@ function findImageFiles (files, folderPath) {
 }
 
 function findAllFiles (folderPath) {
-    return fs.readdirSync(folderPath);
+    var files = fs.readdirSync(folderPath);
+    files.sort(function(a, b) {
+        return a < b ? -1 : 1;
+    });
+    return files;    
 }
 
 function getUserImages() {
@@ -133,20 +144,10 @@ function bindUserImages() {
     table.appendChild(body);
 }
 
-// // Runs when the browser has loaded the page
-// window.onload = function() {
-    
-// };
-
 $(window).load(function() {
-    $('#loading').show();
-
     getUserImages();
     bindUserImages();
-
-    $('#loading').hide();
-    // Initialise the second table specifying a dragClass and an onDrop function that will display an alert
-
+    $('#loading').hide(); 
     $("#grid").tableDnD({
         // onDrop: function(table, row) {
         //     var rows = table.tBodies[0].rows;
@@ -159,26 +160,55 @@ $(window).load(function() {
     });
 
     $('#grid a.move').click(function() {
-        //$(this).closest("tr").next().after($(this).closest("tr"));
-
         var row = $(this).closest('tr');
         if ($(this).hasClass('up'))
             row.prev().before(row);
         else
             row.next().after(row);
-
-        // var table = $('#grid');        
-        // var rows = table.tBodies[0].rows;
-        // for (var i = 0; i < rows.length; i++) {
-        //     var newId = Number(rows[i].rowIndex);
-        //     rows[i].id = newId;
-        //     rows[i].cells[1].innerHTML = newId;
-        // }
-    });    
-});
-
-$(document).ready(function() {
-    $('#btnPublish').click(function() {
-        alert('Button click');
     });
+
+    $('#btnPublish').click(function() {
+        $('#loading').show();
+        var startIndex = (process.platform == "win32") ? 8 : 7;
+        var rows = $('#grid > tbody > tr');
+        for (var i = 0; i < rows.length; i++)
+        {
+            var rowIndex = Number(rows[i].rowIndex) + 100;
+            var oldSort = '' + rowIndex;
+            var newSortNumber = oldSort.substring(1, 3);
+            var cell = rows[i].cells[3];
+            var element = cell.getElementsByTagName('img')[0];
+            var ogImageSource = element['src'].substring(startIndex , element['src'].length);
+            if (process.platform == "win32") {
+                ogImageSource = ogImageSource.replaceAll("/", seperator);
+            }
+
+            //get image rename image
+            var ogImage = path.parse(ogImageSource);
+            var ogTextFileSource = ogImage.dir + seperator + ogImage.name + ".txt";
+            var ogTextFile = path.parse(ogTextFileSource);
+            var ogSortNumber = ogImage.name.substring(0, 2);
+
+            var imageName = ogImage.name.substring(2, ogImage.name.length);          
+            var newImageName = ogImage.dir + seperator + newSortNumber + imageName + ogImage.ext;
+            var newTextFileName = ogTextFile.dir + seperator + newSortNumber + imageName + ogTextFile.ext;
+
+            // rename old name with new name;            
+            //console.log(newImageName);       
+            //use the fs object's rename method to re-name the file
+            fs.rename(ogImageSource, newImageName, function (err) {
+                if (err) {console.log(err); return; } 
+                console.log('The file has been re-named to: ' + newImageName);
+            });
+            //use the fs object's rename method to re-name the file
+            fs.rename(ogTextFileSource, newTextFileName, function (err) {
+                if (err) {console.log(err); return; } 
+                console.log('The file has been re-named to: ' + newTextFileName);
+            });
+        }
+
+        window.location.reload(false);
+    });    
+
+       
 });
